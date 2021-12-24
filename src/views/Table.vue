@@ -1,23 +1,34 @@
 <template>
-   <b-container>
-    <ListArticle
-     url="/blogs"
-     :total="total"
-     @search="searchArticle"
-    > 
-    </ListArticle>
-   </b-container>
+  <div class="home">
+   <Table
+    :columns="columns"
+    :dataConfig="dataConfig"
+    :url="apiUrl"
+   > 
+    <template #actions="data">
+      <b-button size="sm" @click="onEdit(data.item)">
+        Edit
+      </b-button>
+    </template>
+    <template #image="data">
+      <b-img width="64" :src="data.item.image" :alt="data.item.title"></b-img>
+    </template>
+    <template #createdAt="data">
+      {{formatTime(data.item.createdAt, 'MM/DD/YYYY hh:mm A')}}
+    </template>
+   </Table>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { ResponseArticle, RequestArticle } from "@/model/Article";
-import ListArticle from "@/components/ListArticle.vue";
+import Table from "@/components/Table.vue";
 import dayjs from "dayjs";
 
 export default Vue.extend({
   components: {
-    ListArticle,
+    Table,
   },
   data() {
     return {
@@ -50,21 +61,16 @@ export default Vue.extend({
     },
     listArticle(): ResponseArticle[] {
       return this.$store.getters["blog/getListArticle"];
-    },
-    total(): number {
-      return this.listArticle.length;
     }
-  },
-  created() {
-    this.$store.dispatch("blog/getListArticles");
   },
   methods: {
+    onEdit(data: ResponseArticle ): void {
+      console.log(data.id)
+    },
     formatTime(time: string, format: string): string {
+      console.log(time,format)
       return dayjs(time).format(format);
     },
-    searchArticle(event: any){
-     this.$store.dispatch("blog/searchArticles",event);
-    }
   }
 });
 </script>
